@@ -1,4 +1,4 @@
-*.o
-*.so
-*.i
-*.swp
+*.zip
+micro-ecc-master
+.vscode
+*.exe
