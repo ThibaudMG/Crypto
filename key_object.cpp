@@ -6,75 +6,65 @@ using namespace std;
 
 void rand_hex(char str[], int length);
 
-void key_print(uint8_t *vli, unsigned int size);
+void key_print(uint8_t *key, unsigned int size);
 
-struct Keys{
-        uint8_t* private_key;
-        uint8_t* public_key;
-        uint8_t* signature;
+struct Keys
+{
+    uint8_t *private_key;
+    uint8_t *public_key;
+    uint8_t *signature;
 };
 
-Keys initialize(uint8_t* private_key);
+Keys initialize(char *private_key);
 
-char* getPrivateKey();
+void getPrivateKey();
 
-char* getPublicKey();
+void getPublicKey();
 
-uint8_t private_key[64];
-uint8_t* public_key = (uint8_t*) malloc(64);
-uint8_t* adress = (uint8_t*) malloc(20);
+char private_key[64];
+uint8_t *public_key = (uint8_t *)malloc(64);
+uint8_t *signature = (uint8_t *)malloc(20);
 
 int main()
 {
-    srand(time(0));
-    rand_hex((char *) private_key, 64);
     Keys keys;
+
+    srand(time(0));
+    rand_hex(private_key, 64);
+    
     keys = initialize(private_key);
 
-    cout << (string) getPrivateKey() << endl;
-    cout << (string) getPublicKey() <<endl;
-    /*srand(time(0));
-    rand_hex((char *) private_key, 64);
-    cout << "Private Key (Hex): " << private_key << endl;
+    cout << "Private Key: ";
+    getPrivateKey();
+    cout << "Public Key: ";
+    getPublicKey();
 
-    if (uECC_compute_public_key(private_key, public_key, curve)){
-        cout << "Public Key (Hex): "; 
-        key_print(public_key, 64);        
-    } else
-        cout << "Error computing the key" << endl;
-
-
-    if (uECC_sign(private_key, public_key, 20, adress, curve)){
-        cout << "\nAdress: 0x"; 
-        key_print(adress, 64); 
-    } else
-        cout << "Error computing the signature" << endl;
-*/
     return 0;
 }
 
-Keys initialize(uint8_t* private_key){
+Keys initialize(char *private_key)
+{
     Keys keys;
     uECC_Curve curve = uECC_secp256k1();
-    uint8_t* public_key = (uint8_t*) malloc(64);
-    uint8_t* signature = (uint8_t*) malloc(20);
 
-    if (!uECC_compute_public_key(private_key, public_key, curve))
+    if (!uECC_compute_public_key((uint8_t *)private_key, public_key, curve))
         cout << "Error computing the key" << endl;
 
-    if (!uECC_sign(private_key, public_key, 20, signature, curve))
+    if (!uECC_sign((uint8_t *)private_key, public_key, 20, signature, curve))
         cout << "Error computing the signature" << endl;
 
-    keys.private_key = private_key;
+    keys.private_key = (uint8_t *)private_key;
     keys.public_key = public_key;
     keys.signature = signature;
 
     return keys;
 }
 
-void key_print(uint8_t *vli, unsigned int size) {
-    for(unsigned i=0; i<size; ++i) {
-        printf("%02X", (unsigned)vli[i]);
+void key_print(uint8_t *key, unsigned int size)
+{
+    for (unsigned int i = 0; i < size; ++i)
+    {
+        printf("%02X", (unsigned)key[i]);
     }
 }
 
@@ -91,18 +81,12 @@ void rand_hex(char str[], int length)
     str[length] = 0;
 }
 
-char* getPrivateKey(){
-    char* private_key_string = "";
-    for(unsigned i=0; i<64; ++i) {
-        private_key_string += private_key[i];
-    }
-    return private_key_string;
+void getPrivateKey()
+{
+    cout << private_key << endl;
 }
 
-char* getPublicKey(){
-    char* public_key_string = "";
-    for(unsigned i=0; i<128; ++i) {
-        public_key_string += public_key[i];
-    }
-    return public_key_string;
+void getPublicKey()
+{
+    key_print(public_key, 64);
 }
